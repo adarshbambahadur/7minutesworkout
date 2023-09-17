@@ -1,21 +1,16 @@
 package com.procodr.a7minutesworkout
 
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.View
 import android.widget.Toast
 import com.procodr.a7minutesworkout.databinding.ActivityExerciseBinding
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class ExerciseActivity : AppCompatActivity() {
     private var binding: ActivityExerciseBinding? = null
 
-    private var restTimer: CountDownTimer? = null
-    private var restProgress = 0
 
     private var exerciseList: ArrayList<Exercise> = ArrayList()
     private var timer: CountDownTimer? = null
