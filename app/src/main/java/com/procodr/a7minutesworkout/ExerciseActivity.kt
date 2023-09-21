@@ -9,12 +9,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class ExerciseActivity : AppCompatActivity() {
-    private var binding: ActivityExerciseBinding? = null
+    private lateinit var binding: ActivityExerciseBinding
 
 
     private var exerciseList: ArrayList<Exercise> = ArrayList()
     private var timer: CountDownTimer? = null
     private var timerProgress: Long = 0
+
+    private lateinit var exercisesList: ArrayList<ExerciseModel>
+    private var currentExercisePosition = -1
 
     private var progressIdx = 0
 
@@ -25,14 +28,16 @@ class ExerciseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityExerciseBinding.inflate(layoutInflater)
-        setContentView(binding?.root)
+        setContentView(binding.root)
 
-        setSupportActionBar(binding?.toolbarExercise)
+        setSupportActionBar(binding.toolbarExercise)
         if(supportActionBar != null) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
-        binding?.toolbarExercise?.setNavigationOnClickListener {
+        exercisesList = Constants.defaultExerciseList()
+
+        binding.toolbarExercise.setNavigationOnClickListener {
             onBackPressed()
         }
 
@@ -40,32 +45,35 @@ class ExerciseActivity : AppCompatActivity() {
         setupExerciseView()
     }
 
-    private fun setupExerciseView(progressIdx: Int = 0) {
+    private fun setupExerciseView() {
         if (timer != null) {
             timer?.cancel()
             timerProgress = 0
         }
 
-        setProgressBar(progressIdx)
+        setProgressBar()
     }
 
-    private fun setProgressBar(progressIdx: Int) {
-        binding?.progressBar?.max = exerciseList[progressIdx].maxProgress.toInt()
-        binding?.tvTitle?.text = exerciseList[progressIdx].name
-        binding?.progressBar?.progress = exerciseList[progressIdx].maxProgress.toInt()
+    private fun setProgressBar() {
+        binding.progressBar.max = exerciseList[progressIdx].maxProgress.toInt()
+        binding.tvTitle.text = exerciseList[progressIdx].name
+        binding.progressBar.progress = exerciseList[progressIdx].maxProgress.toInt()
 
         timer = object:CountDownTimer(exerciseList[progressIdx].duration, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 timerProgress++
 
-                binding?.tvTimer?.text = (exerciseList[progressIdx].maxProgress - timerProgress).toString()
-                binding?.progressBar?.progress = (exerciseList[progressIdx].maxProgress - timerProgress).toInt()
+                binding.tvTimer.text = (exerciseList[progressIdx].maxProgress - timerProgress).toString()
+                binding.progressBar.progress = (exerciseList[progressIdx].maxProgress - timerProgress).toInt()
             }
 
             override fun onFinish() {
                 Toast.makeText(this@ExerciseActivity, exerciseList[progressIdx].afterPrompt, Toast.LENGTH_SHORT).show()
-                var idx = progressIdx
-                setupExerciseView(++idx)
+                if (progressIdx % 2 == 0) {
+                    currentExercisePosition++
+                }
+                progressIdx++
+                setupExerciseView()
             }
         }.start()
     }
@@ -92,7 +100,5 @@ class ExerciseActivity : AppCompatActivity() {
             timer?.cancel()
             timerProgress = 0
         }
-
-        binding = null
     }
 }
